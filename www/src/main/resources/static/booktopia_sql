@@ -1,0 +1,205 @@
+--회원 DB
+CREATE TABLE user (
+id varchar(200) NOT NULL,
+pwd VARCHAR(200),
+email VARCHAR(200),
+name VARCHAR(200),
+phone VARCHAR(200),
+address VARCHAR(200),
+user_del VARCHAR(1) DEFAULT 'N',
+user_reg DATETIME DEFAULT now(),
+user_up DATETIME DEFAULT now(),
+user_type VARCHAR(200),
+access_token VARCHAR(1000),
+PRIMARY KEY(id));
+
+
+--권한 DB
+CREATE TABLE auth (
+id VARCHAR(200) NOT NULL,
+role VARCHAR(200) DEFAULT 'ROLE_USER');
+
+--문의내역 DB
+CREATE TABLE qna (
+qna_num INT AUTO_INCREMENT PRIMARY KEY,
+id VARCHAR(200),
+qna_title VARCHAR(500),
+qna_content TEXT,
+qna_answer TEXT,
+qna_reg_at DATETIME DEFAULT NOW(),
+qna_mod_at DATETIME
+);
+
+
+--책 목록 DB
+CREATE TABLE book(
+book_code INT NOT NULL,
+book_title VARCHAR(200) ,
+book_writer VARCHAR(200) ,
+book_cate VARCHAR(200) ,
+result_type varchar(1),
+book_story VARCHAR(300),
+book_img varchar(500),
+PRIMARY KEY(book_code));
+
+
+--취향검사 결과 저장용 DB
+create table booktopia (
+btp_no int auto_increment,
+id varchar(200),
+birth varchar(200),
+gender varchar(1),
+test_at datetime default now(),
+btn_result int,
+primary key(btp_no));
+
+
+--결제 DB
+CREATE TABLE pay(
+merchant_uid VARCHAR(200),
+item_name varchar(200),
+total_amount int default 0,
+sale_amount int default 0,
+cou_no int,
+approved_at DATETIME default now());
+
+
+--주문내역 DB
+CREATE TABLE order_info(
+merchant_uid VARCHAR(300),
+imp_uid VARCHAR(200),
+id varchar(200) not null,
+ord_name varchar(200),
+ord_email varchar(200),
+ord_phone varchar(200),
+ord_addr varchar(200),
+ord_regdate datetime default now(),
+primary key(merchant_uid));
+
+
+--쿠폰 사용내역 DB
+CREATE TABLE coupon_use (
+merchant_uid varchar(200),
+id VARCHAR(200) NOT NULL,
+cou_no INT NOT NULL,
+cou_use VARCHAR(20) DEFAULT 'N');
+
+
+--쿠폰 내역 DB(어드민)
+create table ad_coupon(
+cou_no int NOT NULL auto_increment,
+ad_cou_name varchar(200),
+ad_cou_period varchar(200),
+ad_cou_date datetime default now(),
+ad_cou_sale float,
+ad_cou_info varchar(500),
+primary key(cou_no));
+
+
+--배송현황 DB
+create table delivery (
+deli_no int auto_increment,
+merchant_uid varchar(300) not null,
+id varchar(200) not null,
+item_name varchar(200),
+deli_date datetime default now(),
+deli_status varchar(20) not null default '배송준비중',
+primary key(deli_no));
+
+
+--구독권 정보 DB
+CREATE TABLE subscribe_info(
+ship_no INT NOT NULL,
+sub_in_month INT,
+sub_in_price INT,
+PRIMARY KEY(ship_no));
+
+
+--게시판 DB
+CREATE TABLE board(
+bno bigint NOT NULL auto_increment,
+id varchar(200) NOT NULL,
+b_title varchar(200),
+b_writer varchar(200),
+b_content text,
+b_reg_date datetime default now(),
+b_up_date datetime,
+b_read_cnt int default 0,
+b_cmt_cnt int default 0,
+b_heart_cnt int default 0,
+b_is_del varchar(1) default 'N',
+b_cate varchar(200),
+b_mainImg varchar(500),
+primary key(bno));
+
+
+--댓글 DB
+CREATE TABLE comment (
+cno bigint NOT NULL auto_increment,
+bno bigint NOT NULL,
+c_writer varchar(200),
+c_content text,
+c_reg_date datetime default now(),
+primary key(cno));
+
+
+--대댓글 DB
+CREATE TABLE recomment (
+rc_cno int NOT NULL auto_increment,
+cno bigint NOT NULL,
+bno bigint,
+rc_writer varchar(200) NOT NULL,
+rc_content text,
+rc_reg_date datetime default now(),
+primary key(rc_cno));
+
+
+--좋아요 DB
+create table heart(
+hno bigint NOT NULL auto_increment,
+id varchar(200) NOT NULL,
+bno bigint NOT NULL,
+heart_yn tinyint default 1,
+primary key(hno));
+
+
+--투표 DB
+create table vote (
+id varchar(200),
+vote_result varchar(10));
+
+--투표 기본값 저장용 DB
+create table system_info (
+score int default 50);
+
+
+--파일 DB
+create table file(
+uuid varchar(256) NOT NULL,
+save_dir varchar(256) NOT NULL,
+file_name varchar(256) NOT NULL,
+file_size bigint NOT NULL,
+file_type int NOT NULL default 0,
+primary key(uuid));
+
+
+--챗봇 DB
+create table chatbot(
+chat_no int not null,
+chat_ans text,
+chat_type varchar(100),
+primary key(chat_no));
+
+
+
+-- 외래키 추가
+ALTER TABLE auth ADD CONSTRAINT fk_auth_id FOREIGN KEY(id) REFERENCES user(id);
+ALTER TABLE coupon_use ADD CONSTRAINT fk_cou_use_id FOREIGN KEY(id) REFERENCES user(id);
+ALTER TABLE heart ADD CONSTRAINT fk_heart_id FOREIGN KEY(id) REFERENCES user(id);
+ALTER TABLE heart ADD CONSTRAINT fk_heart_bno FOREIGN KEY(bno) REFERENCES board(bno);
+ALTER TABLE board ADD CONSTRAINT fk_board_id FOREIGN KEY(id) REFERENCES user(id);
+ALTER TABLE comment ADD CONSTRAINT fk_comment_id FOREIGN KEY(bno) REFERENCES board(bno);
+ALTER TABLE recomment ADD CONSTRAINT fk_recomment_id FOREIGN KEY(cno) REFERENCES comment(cno);
+ALTER TABLE pay ADD CONSTRAINT fk_pay_id FOREIGN KEY(merchant_uid) REFERENCES order_info(merchant_uid);
+
+
